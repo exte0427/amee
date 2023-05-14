@@ -1,5 +1,5 @@
-import occur,draw,fun,windowad
-import ame
+import occur,draw,fun
+import ame,move
 import tkinter as tk
 
 # sound
@@ -45,6 +45,7 @@ def main(self):
         # groundpound
         self.moveManager.end()
         self.poseManager.setPose(draw.PoseList.jump,draw.MorePose(1,end))
+        ame.Run(main,setting,False,self.moveManager.nowPos)
         
         
     # muse
@@ -76,4 +77,4 @@ def main(self):
     ]
     return cmds
     
-ame.Run(main,setting)
+ame.Run(main,setting,True)

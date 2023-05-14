@@ -3,7 +3,7 @@ import random
 import window
 
 class MoveManager:
-    def __init__(self,root,frameRate,speedPerSec):
+    def __init__(self,root,frameRate,speedPerSec,pos=None):
         self.root = root
         self.windowSize = (0,0)
         self.frameRate = frameRate
@@ -11,21 +11,36 @@ class MoveManager:
         
         self.targetDir = (0,0)
         self.targetPos = (0,0)
+        self.nowPos = (0,0)
         self.estimateTime = 0
         self.timer = 0
         self.ceased = True
         
-        self._setPoint()
-        
         # locate randomly
-        _locate(self.root,window.randomPos(self.root))
+        if(pos == None):
+            self._locate(window.randomPos(self.root))
+        else:
+            self._locate(pos)
+            
+        # target pos
+        self._setPoint()
+    
+    def _locate(self, targetPos):
+        self.root.geometry(f'+{int(targetPos[0])}+{int(targetPos[1])}')
+        self.nowPos = targetPos
         
+    def _moveDir(self,targetDir):
+        rx,ry = self.nowPos
+        dx,dy = targetDir
+        
+        self._locate((rx+dx,ry+dy))
+    
     def _getWindowSize(self):
         return self.root.winfo_width(), self.root.winfo_height()
     
     def _reached(self):
         self.targetDir = (0,0)
-        _locate(self.root,self.targetPos)
+        self._locate(self.targetPos)
         self.timer = 0
         
         self._setPoint()
@@ -38,10 +53,12 @@ class MoveManager:
         self.timer = 0
         
         #calculate estimate time
-        distance = math.dist(_getPos(self.root),self.targetPos)
-        self.estimateTime = int((distance / self.speedPerFrame))
-        normed = _norm(_getPos(self.root),self.targetPos)
+        distance = math.dist(self.nowPos,self.targetPos)
+        self.estimateTime = int(distance / self.speedPerFrame)
+        normed = _norm(self.nowPos,self.targetPos)
         self.targetDir = (normed[0]*self.speedPerFrame, normed[1]*self.speedPerFrame)
+        
+        print(self.nowPos,self.targetPos,self.targetDir)
         
     def start(self):
         self.ceased = False
@@ -54,23 +71,11 @@ class MoveManager:
             if(self.estimateTime <= self.timer):
                 self._reached()
 
-            _moveDir(self.root,self.targetDir)
+            self._moveDir(self.targetDir)
             self.timer += 1
 
 def getWait():
     return random.randrange(3000,8000)
-
-def _locate(root, targetPos):
-    root.geometry(f'+{int(targetPos[0])}+{int(targetPos[1])}')
-    
-def _getPos(root):
-        return root.winfo_x(), root.winfo_y()
-    
-def _moveDir(root,targetDir):
-    rx,ry = _getPos(root)
-    dx,dy = targetDir
-    
-    _locate(root,(rx+dx,ry+dy))
     
 def _norm(startPos,endPos):
     sx,sy = startPos

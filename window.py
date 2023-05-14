@@ -19,6 +19,8 @@ class Window:
         imgLabel.image = img
         imgLabel.configure(image=img)
         imgLabel.pack()
+
+        self.root.update_idletasks()
     
 def getTask():
     monitor_info = GetMonitorInfo(MonitorFromPoint((0,0)))
@@ -33,33 +35,33 @@ def randomPos(root):
         taskSize = getTask()
     
     winSize = root.winfo_screenwidth(), root.winfo_screenheight()
-    rootSize = root.winfo_reqwidth(), root.winfo_reqheight()
+    rootSize = root.winfo_width(), root.winfo_height()
     
     return (random.randint(0,winSize[0]-rootSize[0]),random.randint(0,winSize[1]-rootSize[1]-taskSize))
 
 def randomEdge(root):
     winSize = root.winfo_screenwidth(), root.winfo_screenheight()
-    rootSize = root.winfo_reqwidth(), root.winfo_reqheight()
+    rootSize = root.winfo_width(), root.winfo_height()
     
     if(fun.percent(50)):
         if(fun.percent(50)):
-            # top
-            return (-rootSize[0],random.randint(-rootSize[1],winSize[1]))
-        else:
-            # bottom
-            return (winSize[1],random.randint(-rootSize[1],winSize[1]))
-    else:
-        if(fun.percent(50)):
             # left
-            return (random.randint(-rootSize[0],winSize[0]),-rootSize[1])
+            return (-rootSize[0],random.randint(0,winSize[1]-rootSize[1]))
         else:
             # right
-            return (random.randint(-rootSize[0],winSize[0]),winSize[1])
+            return (winSize[1],random.randint(0,winSize[1]-rootSize[1]))
+    else:
+        if(fun.percent(50)):
+            # top
+            return (random.randint(0,winSize[0]-rootSize[0]),-rootSize[1])
+        else:
+            # bottom
+            return (random.randint(0,winSize[0]-rootSize[0]),winSize[1])
 
 def _test():
     
     rawImg = getweb.getImg("https://pbs.twimg.com/media/Eomn0n5W8AAZu0K.png")
-    rootImg = draw._resizeImg(rawImg,100)
+    rootImg = rawImg
     
     main = Window()
     print(getTask())

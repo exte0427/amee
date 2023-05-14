@@ -9,14 +9,20 @@ class Config:
         self.speedPerSec = speedPerSec
 
 class Run:
-    def __init__(self, getCmds,config):
+    def __init__(self, getCmds,config,firstAme=False,pos=None):
+        # gen
+        if(firstAme):
+            self.root = tk.Tk()
+        else:
+            self.root = tk.Toplevel()
+        
         # borderless
-        self.root = tk.Tk()
         self.root.wm_attributes("-topmost", True)
         self.root.overrideredirect(True)
         
         # config get
         self.config = config
+        self.pos = pos
         
         # run commands
         self.cmds = getCmds(self)
@@ -25,10 +31,11 @@ class Run:
         self._start(self.root)
 
         # transparent
-        self.root.config(bg = '#add123')
-        self.root.wm_attributes('-transparentcolor','#add123')
+        self.root.config(bg = '#000001')
+        self.root.wm_attributes('-transparentcolor','#000001')
         
-        self.root.mainloop()
+        if(firstAme):
+            self.root.mainloop()
         
     def _start(self,root):
         # set data
@@ -38,7 +45,7 @@ class Run:
         # set managers
         self.poseManager = draw.PoseManager(self.root)
         self.occurManager = occur.OccurManager(self.config.frameRate,self.root)
-        self.moveManager = move.MoveManager(self.root,self.config.frameRate,self.config.speedPerSec)
+        self.moveManager = move.MoveManager(self.root,self.config.frameRate,self.config.speedPerSec,self.pos)
         
         # set initial values
         # self.poseManager.setPose(draw.PoseList.walk,self.root)

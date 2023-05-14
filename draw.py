@@ -14,12 +14,12 @@ class PoseList(Enum):
 class GIFGetter:
     def __init__(self):
         self.gif = {
-            "walk":extractGif("ame/walk.gif",80),
-            "stand":extractGif("ame/stand.gif",100),
-            "jump":extractGif("ame/jump.gif",110),
-            "eat":extractGif("ame/eat.gif",90),
-            "muse":extractGif("ame/muse.gif",90),
-            "roll":extractGif("ame/roll.gif",110)
+            "walk":extractGif("ame/walk.gif"),
+            "stand":extractGif("ame/stand.gif"),
+            "jump":extractGif("ame/jump.gif"),
+            "eat":extractGif("ame/eat.gif"),
+            "muse":extractGif("ame/muse.gif"),
+            "roll":extractGif("ame/roll.gif")
         }
         
     def getFile(self,pose):
@@ -48,11 +48,14 @@ class PoseManager:
         self.isFlip = False
         self.root = root
         
-        self.imgLabel = tk.Label(root, bg="#add123")
+        self.imgLabel = tk.Label(root, bg="#000001")
         self.imgLabel.pack()
         
         # set GIFGetter
         self.gifGetter=GIFGetter()
+        
+        # first size
+        self._setGif(self.gifGetter.getFile(PoseList.stand))
         
     def _setGif(self,gifList):
         self.picList = gifList
@@ -61,7 +64,11 @@ class PoseManager:
         self.nowFrame = 0
         
         windowSize = self.picList[0].size
+        self._setFrame(self._getNow())
         self.root.geometry(f"{windowSize[0]}x{windowSize[1]}")
+        
+        self.imgLabel.pack()
+        self.root.update_idletasks()
         
 
     def setPose(self,newPose, morePose=None):
@@ -100,15 +107,10 @@ class PoseManager:
             
             self.nowFrame = 0
 
-def _resizeImg(img,resize):
-    wid,hig = img.size
-    img.thumbnail((resize,hig/wid*resize),Image.NEAREST)
-    return img
-
-def extractGif(path,resize=100):
+def extractGif(path):
     img = Image.open(path)
     frames = []
     for frame in ImageSequence.Iterator(img):
         frames.append(frame.copy())
         
-    return list(map(lambda img:_resizeImg(img,resize),frames))
+    return frames
