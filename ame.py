@@ -1,6 +1,4 @@
-import draw
-import occur
-import move
+import draw,occur,move,animation
 import tkinter as tk
 
 class Config:
@@ -41,6 +39,7 @@ class Run:
         self.moveManager = move.MoveManager(self.root,self.config.frameRate,self.config.speedPerSec,self.pos)
         self.poseManager = draw.PoseManager(self.root)
         self.occurManager = occur.OccurManager(self.config.frameRate,self.root)
+        self.animationManager = animation.AnimationManager()
         
         # set initial values
         # self.poseManager.setPose(draw.PoseList.walk,self.root)
@@ -58,6 +57,7 @@ class Run:
         self.poseManager.nextFrame()
         self.occurManager.nextFrame()
         self.moveManager.nextFrame()
+        self.animationManager.nextFrame()
         
         # flip
         if(self.moveManager.targetDir[0] < 0):

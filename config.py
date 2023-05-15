@@ -1,5 +1,5 @@
 import occur,draw,fun
-import ame,gen,window,getweb
+import ame,gen,window,getweb,animation
 
 # sound
 from ctypes import cast, POINTER
@@ -17,6 +17,10 @@ def main(self):
     
     # stand, and basic pose
     def _stand(end):
+        
+        # stand
+        self.moveManager.moveToward(self.moveManager.nowPos)
+        
         if(fun.percent(7)):
             # eat cake
             self.poseManager.setPose(draw.PoseList.eat,draw.MorePose(1,end))
@@ -70,10 +74,13 @@ def main(self):
     
     # onclick  
     def _onclick(end):
-        # groundpound
-        self.poseManager.setPose(draw.PoseList.jump,draw.MorePose(1,end))
-        ame.Run(main,setting,False,self.moveManager.nowPos)
         
+        def afterGP():
+            ame.Run(main,setting,self.moveManager.nowPos)
+            self.animationManager.add(animation.genShake(2,10,setting.frameRate))
+            end()
+        # groundpound
+        self.poseManager.setPose(draw.PoseList.jump,draw.MorePose(1,afterGP))
         
     # muse set
     devices = AudioUtilities.GetSpeakers()
@@ -93,6 +100,10 @@ def main(self):
             return False
         
     def _museOn(end):
+        
+        # stand
+        self.moveManager.moveToward(self.moveManager.nowPos)
+        
         # muse
         self.poseManager.setPose(draw.PoseList.muse,draw.MorePose(10,end))
         

@@ -1,5 +1,4 @@
 import math
-import random
 import window,fun
 
 class MoveManager:
@@ -66,7 +65,7 @@ class MoveManager:
         normed = _norm(self.nowPos,self.targetPos)
         self.targetDir = (normed[0]*self.speedPerFrame, normed[1]*self.speedPerFrame)
         
-    def moveToward(self,pos,callback):
+    def moveToward(self,pos,callback=None):
         self.ceased = False
         self._setPoint(pos)
         self.callback=callback
@@ -96,4 +95,7 @@ def _norm(startPos,endPos):
     
     dist = math.dist((0,0),(x,y))
     
-    return (x/dist,y/dist)
+    if(dist != 0):
+        return (x/dist,y/dist)
+    else:
+        return (0,0)
