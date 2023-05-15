@@ -8,19 +8,51 @@ from win32api import GetMonitorInfo, MonitorFromPoint
 class Window:
     def __init__(self):
         self.root = tk.Toplevel()
+        self.root.resizable(False, False)
+        self.root.title("ame")
+        
+        # set window
+        self.root.overrideredirect(True)
+        self.root.wm_attributes("-topmost", True)
+        
         self._locate((0,0))
         
     def _locate(self,targetPos):
+        self.pos = targetPos
         self.root.geometry(f'+{int(targetPos[0])}+{int(targetPos[1])}')
+    
+    def delThis(self,event):
+        self.root.destroy()
         
     def _setImg(self,rawImg):
         img = ImageTk.PhotoImage(rawImg)
-        imgLabel = tk.Label(self.root,image = img)
+        imgLabel = tk.Label(self.root,image = img,cursor="hand1")
         imgLabel.image = img
         imgLabel.configure(image=img)
+        imgLabel.bind("<Button-1>",self.delThis)
+        
         imgLabel.pack()
 
         self.root.update_idletasks()
+        
+    def _getEdge(self):
+        
+        rootSize = self.root.winfo_width(), self.root.winfo_height()
+        print(rootSize)
+        if(fun.percent(50)):
+            if(fun.percent(50)):
+                # top
+                return (-random.randint(0,rootSize[0]),0)
+            else:
+                # bottom
+                return (-random.randint(0,rootSize[0]),-rootSize[1])
+        else:
+            if(fun.percent(50)):
+                # left
+                return (0,-random.randint(0,rootSize[1]))
+            else:
+                # right
+                return (-rootSize[0],-random.randint(0,rootSize[1]))
     
 def getTask():
     monitor_info = GetMonitorInfo(MonitorFromPoint((0,0)))
@@ -49,7 +81,7 @@ def randomEdge(root):
             return (-rootSize[0],random.randint(0,winSize[1]-rootSize[1]))
         else:
             # right
-            return (winSize[1],random.randint(0,winSize[1]-rootSize[1]))
+            return (winSize[0],random.randint(0,winSize[1]-rootSize[1]))
     else:
         if(fun.percent(50)):
             # top
@@ -61,16 +93,15 @@ def randomEdge(root):
 def _test():
     
     # get img
-    rawImg = getweb.getImg("https://pbs.twimg.com/media/Eomn0n5W8AAZu0K.png")
-    rootImg = rawImg
+    imgs = getweb.AmeImg()
     
     main = Window()
     print(getTask())
     for _ in range(10):
         mywin = Window()
-        mywin._setImg(rootImg)
-        mywin._locate(randomEdge(mywin.root))
+        mywin._setImg(imgs.get())
+        mywin._locate(randomPos(mywin.root))
         
     main.root.mainloop()
-    
+
 # _test()

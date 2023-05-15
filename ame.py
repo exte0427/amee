@@ -1,20 +1,16 @@
-import draw
-import occur
-import move
+import draw,occur,move,animation
 import tkinter as tk
 
 class Config:
     def __init__(self,frameRate,speedPerSec):
         self.frameRate = frameRate
         self.speedPerSec = speedPerSec
+        self.ALWAYS = 100 * frameRate
 
 class Run:
-    def __init__(self, getCmds,config,firstAme=False,pos=None):
+    def __init__(self, getCmds,config,pos=None):
         # gen
-        if(firstAme):
-            self.root = tk.Tk()
-        else:
-            self.root = tk.Toplevel()
+        self.root = tk.Toplevel()
         
         # borderless
         self.root.wm_attributes("-topmost", True)
@@ -40,18 +36,16 @@ class Run:
         self.root = root
         
         # set managers
+        self.moveManager = move.MoveManager(self.root,self.config.frameRate,self.config.speedPerSec,self.pos)
         self.poseManager = draw.PoseManager(self.root)
         self.occurManager = occur.OccurManager(self.config.frameRate,self.root)
-        self.moveManager = move.MoveManager(self.root,self.config.frameRate,self.config.speedPerSec,self.pos)
+        self.animationManager = animation.AnimationManager()
         
         # set initial values
         # self.poseManager.setPose(draw.PoseList.walk,self.root)
         
         # event setting
         self.occurManager.occurList(self.cmds)
-        
-        # base setting
-        self.occurManager.onStart(0);
         
         # run
         self._genFrame()
@@ -63,6 +57,7 @@ class Run:
         self.poseManager.nextFrame()
         self.occurManager.nextFrame()
         self.moveManager.nextFrame()
+        self.animationManager.nextFrame()
         
         # flip
         if(self.moveManager.targetDir[0] < 0):
