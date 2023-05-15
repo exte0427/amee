@@ -78,21 +78,17 @@ class OccurManager:
         return self.runIndex == -1 or runIndex <= self.runIndex
         
     def endRun(self):
-        self.start()
+        self.runIndex = -1
+        self.runCmdMethod = None
         
-    def onStart(self,index):
-        self.startIndex = index
-        self.start()
-        
-    def start(self):
-        self.runIndex = self.commandList[self.startIndex].runIndex
-        self.runCmdMethod = self.commandList[self.startIndex].run(self.endRun)
+    def start(self,cmd):
+        self.runIndex = cmd.runIndex-1
+        self.runCmdMethod = cmd.run(self.endRun)
         
     def runCommands(self):
         for cmd in self.commandList:
             if self.calcRunIndex(cmd.runIndex) and self.eventListener.calculateRun(cmd.when):
-                self.runIndex = cmd.runIndex
-                self.runCmdMethod = cmd.run(self.endRun)
+                self.start(cmd)
         
     def nextFrame(self):
         

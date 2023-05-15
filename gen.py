@@ -29,12 +29,8 @@ class Gen:
         self.root.mainloop()
         
     def runAmes(self):
-        # del
-        self.root.destroy()
-        
-        mainAme = ame.Run(self.getCmds,self.config,True)
-        for _ in range(self.genNum.get()-1):
-            ame.Run(self.getCmds,self.config,False)
-            
-        # run main ame
-        mainAme.root.mainloop()
+        # hide
+        self.root.withdraw()
+
+        for _ in range(self.genNum.get()):
+            ame.Run(self.getCmds,self.config)

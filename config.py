@@ -1,5 +1,5 @@
 import occur,draw,fun
-import ame,gen
+import ame,gen,window,getweb
 
 # sound
 from ctypes import cast, POINTER
@@ -11,38 +11,66 @@ setting = ame.Config(
     speedPerSec = 600
 )
 
+ameImg = getweb.AmeImg()
+
 def main(self):
     
+    # stand, and basic pose
+    def _stand(end):
+        if(fun.percent(7)):
+            # eat cake
+            self.poseManager.setPose(draw.PoseList.eat,draw.MorePose(1,end))
+        else:
+            # stand
+            self.poseManager.setPose(draw.PoseList.stand,draw.MorePose(1,end))
+    
      # main
-    def _mainEvent(end):
-        if(fun.percent(40)):
-            # run
-            self.moveManager.start()
+    def _run(end):
+        # run
+        self.moveManager.moveToward(None,end)
+        self.poseManager.setPose(draw.PoseList.walk)
+        
+        def backNormal():
             self.poseManager.setPose(draw.PoseList.walk)
             
-            def backNormal():
-                self.poseManager.setPose(draw.PoseList.walk)
+        def runPoseSelc():
+            if(fun.percent(50,setting.frameRate)):
+                self.poseManager.setPose(draw.PoseList.roll,draw.MorePose(1,backNormal))
 
-            def runPoseSelc():
-                if(fun.percent(50,setting.frameRate)):
-                    self.poseManager.setPose(draw.PoseList.roll,draw.MorePose(1,backNormal))
-
-            return runPoseSelc
+        return runPoseSelc
+    
+    def _windowPicker(end):
         
-        else:
-            if(fun.percent(75)):
-                # stand
-                self.moveManager.end()
-                self.poseManager.setPose(draw.PoseList.stand)
-            else:
-                # eat cake
-                self.moveManager.end()
-                self.poseManager.setPose(draw.PoseList.eat)
+        def _endThings():
+            self.moveManager.detach(mywin)
+            end()
+        
+        def _pullWindow():
+            # pull window
+            self.moveManager.attach(mywin,edgeAdder)
+            print(edgeAdder)
+            self.moveManager.moveToward(pos,_endThings)
+        
+        # get now pos
+        pos = self.moveManager.nowPos
+        edgeAdder = (0,0)
+        
+        # get some random window
+        mywin = window.Window()
+        mywin._setImg(ameImg.get())
+        mywin._locate(window.randomEdge(mywin.root))
+        self.root.lift()
+        
+        # get edge of the window
+        edgeAdder = mywin._getEdge()
+        
+        # move to random window
+        self.poseManager.setPose(draw.PoseList.walk)
+        self.moveManager.moveToward(fun.addVector(mywin.pos,fun.reVector(edgeAdder)),_pullWindow)
     
     # onclick  
     def _onclick(end):
         # groundpound
-        self.moveManager.end()
         self.poseManager.setPose(draw.PoseList.jump,draw.MorePose(1,end))
         ame.Run(main,setting,False,self.moveManager.nowPos)
         
@@ -66,13 +94,14 @@ def main(self):
         
     def _museOn(end):
         # muse
-        self.moveManager.end()
         self.poseManager.setPose(draw.PoseList.muse,draw.MorePose(10,end))
         
     cmds = [
-        occur.Command(occur.When(setting.frameRate,percent=50),_mainEvent,2),
-        occur.Command(occur.When(clicked=0),_onclick,1),
-        occur.Command(occur.When(checker=_museChecker),_museOn,0)
+        occur.Command(occur.When(setting.frameRate,percent=setting.ALWAYS),_stand,5),
+        occur.Command(occur.When(setting.frameRate,percent=70),_run,4),
+        occur.Command(occur.When(clicked=0),_onclick,3),
+        occur.Command(occur.When(checker=_museChecker),_museOn,2),
+        occur.Command(occur.When(setting.frameRate,percent=1/60 * 100),_windowPicker,1),
     ]
     return cmds
     
