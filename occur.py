@@ -17,6 +17,8 @@ class Command:
 
 class EventListener:
     def __init__(self, imgLabel,frameRate):
+        
+        # setting
         self.imgLabel = imgLabel
         self.event = [False,False,False]
         self._setEvent()

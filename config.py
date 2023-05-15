@@ -47,7 +47,7 @@ def main(self):
         ame.Run(main,setting,False,self.moveManager.nowPos)
         
         
-    # muse
+    # muse set
     devices = AudioUtilities.GetSpeakers()
     interface = devices.Activate(
     IAudioEndpointVolume._iid_, CLSCTX_ALL, None)

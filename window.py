@@ -60,6 +60,7 @@ def randomEdge(root):
 
 def _test():
     
+    # get img
     rawImg = getweb.getImg("https://pbs.twimg.com/media/Eomn0n5W8AAZu0K.png")
     rootImg = rawImg
     
