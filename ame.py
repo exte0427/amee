@@ -2,6 +2,7 @@ import draw
 import occur
 import move
 import tkinter as tk
+import asyncio
 
 class Config:
     def __init__(self,frameRate,speedPerSec):
@@ -33,9 +34,6 @@ class Run:
         # transparent
         self.root.config(bg = '#000001')
         self.root.wm_attributes('-transparentcolor','#000001')
-        
-        if(firstAme):
-            self.root.mainloop()
         
     def _start(self,root):
         # set data

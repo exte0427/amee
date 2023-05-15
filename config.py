@@ -1,5 +1,5 @@
 import occur,draw,fun
-import ame,move
+import ame,gen
 import tkinter as tk
 
 # sound
@@ -77,4 +77,5 @@ def main(self):
     ]
     return cmds
     
-ame.Run(main,setting,True)
+
+gen.Gen(main,setting)
