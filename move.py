@@ -58,6 +58,8 @@ class MoveManager:
         normed = _norm(self.nowPos,self.targetPos)
         self.targetDir = (normed[0]*self.speedPerFrame, normed[1]*self.speedPerFrame)
         
+        print(self.nowPos,self.targetPos,self.targetDir)
+        
     def start(self):
         self.ceased = False
         
