@@ -1,7 +1,7 @@
 import tkinter as tk
-from PIL import Image,ImageTk
+from PIL import ImageTk
 import random
-import getweb,draw,fun
+import getweb,fun
 
 from win32api import GetMonitorInfo, MonitorFromPoint
 

@@ -1,6 +1,4 @@
-import tkinter as tk
 import random
-from enum import Enum
 
 class When:
     def __init__(self,frameRate = -1,clicked=-1, percent=-1,checker=None):

@@ -2,7 +2,6 @@ import draw
 import occur
 import move
 import tkinter as tk
-import asyncio
 
 class Config:
     def __init__(self,frameRate,speedPerSec):

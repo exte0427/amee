@@ -1,6 +1,5 @@
 import occur,draw,fun
 import ame,gen
-import tkinter as tk
 
 # sound
 from ctypes import cast, POINTER
