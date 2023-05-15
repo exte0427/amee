@@ -34,7 +34,7 @@ class MoveManager:
         dx,dy = targetDir
         
         self._locate((rx+dx,ry+dy))
-    
+
     def _getWindowSize(self):
         return self.root.winfo_width(), self.root.winfo_height()
     
@@ -46,6 +46,8 @@ class MoveManager:
         self._setPoint()
         
     def _setPoint(self,pos=None):
+        
+        # if none, get random pos
         if pos == None:
             pos = window.randomPos(self.root)
             

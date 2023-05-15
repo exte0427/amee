@@ -4,6 +4,8 @@ import ame
 
 class Gen:
     def __init__(self, getCmds,config):
+        
+        # making app
         self.root = tk.Tk()
         self.root.title("ameDesktop")
         

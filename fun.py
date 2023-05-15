@@ -1,5 +1,6 @@
 import random
 
+# percentage to run 0~100
 def percent(percentage, frameRate=1):
     if(random.uniform(0,100) <= percentage/frameRate):
         return True

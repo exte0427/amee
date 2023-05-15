@@ -58,8 +58,7 @@ class Run:
         
 
     def _genFrame(self):
-        # start code
-        
+
         # manager
         self.poseManager.nextFrame()
         self.occurManager.nextFrame()

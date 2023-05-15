@@ -41,6 +41,7 @@ class MorePose:
         
 class PoseManager:
     def __init__(self,root):
+        
         # set pictures
         self.picList =[]
         self.nowPos = PoseList.none
