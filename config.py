@@ -1,19 +1,42 @@
-import occur,draw,fun
-import ame,gen,window,getweb,animation
+import occur,pose,fun
+import ame,gen,window,getweb,animation,setting,attach
+import random
 
 # sound
 from ctypes import cast, POINTER
 from comtypes import CLSCTX_ALL
 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 
-setting = ame.Config(
+setting.main = setting.Config(
     frameRate = 60,
     speedPerSec = 600
 )
 
 ameImg = getweb.AmeImg()
 
-def main(self):
+def main(self:ame.Ame):
+    
+    # basic movements
+    def _move(pos,end):
+        # run
+        self.moveManager.moveToward(pos,end)
+        self.poseManager.setPose(pose.PoseList.walk)
+        
+        def backNormal():
+            self.poseManager.setPose(pose.PoseList.walk)
+            
+        def runPoseSelc():
+            
+            # calc flip
+            if(self.moveManager.targetDir[0] > 0):
+                self.poseManager.flip(False)
+            else:
+                self.poseManager.flip(True)
+            
+            if(fun.percent(50)):
+                self.poseManager.setPose(pose.PoseList.roll,pose.MorePose(1,backNormal))
+
+        return runPoseSelc
     
     # stand, and basic pose
     def _stand(end):
@@ -21,39 +44,31 @@ def main(self):
         # stand
         self.moveManager.moveToward(self.moveManager.nowPos)
         
-        if(fun.percent(7)):
+        if(fun.percent(4,True)):
             # eat cake
-            self.poseManager.setPose(draw.PoseList.eat,draw.MorePose(1,end))
+            self.poseManager.setPose(pose.PoseList.eat,pose.MorePose(random.randint(2,5),end))
         else:
             # stand
-            self.poseManager.setPose(draw.PoseList.stand,draw.MorePose(1,end))
+            self.poseManager.setPose(pose.PoseList.stand,pose.MorePose(1,end))
     
      # main
     def _run(end):
-        # run
-        self.moveManager.moveToward(None,end)
-        self.poseManager.setPose(draw.PoseList.walk)
-        
-        def backNormal():
-            self.poseManager.setPose(draw.PoseList.walk)
-            
-        def runPoseSelc():
-            if(fun.percent(50,setting.frameRate)):
-                self.poseManager.setPose(draw.PoseList.roll,draw.MorePose(1,backNormal))
-
-        return runPoseSelc
+        return _move(None,end)
     
     def _windowPicker(end):
         
-        def _endThings():
-            self.moveManager.detach(mywin)
-            end()
+        def _endThings(detacher):
+            def _end():
+                print("!")
+                detacher()
+                end()
+                
+            return _end
         
         def _pullWindow():
             # pull window
-            self.moveManager.attach(mywin,edgeAdder)
-            print(edgeAdder)
-            self.moveManager.moveToward(pos,_endThings)
+            detacher = self.attachManager.attach(attach.AttachedWindow(mywin,to=self))
+            self.moveManager.moveToward(pos,_endThings(detacher))
         
         # get now pos
         pos = self.moveManager.nowPos
@@ -62,25 +77,23 @@ def main(self):
         # get some random window
         mywin = window.Window()
         mywin._setImg(ameImg.get())
-        mywin._locate(window.randomEdge(mywin.root))
-        self.root.lift()
+        mywin._locate(window.randomEdge(mywin.size))
         
         # get edge of the window
         edgeAdder = mywin._getEdge()
         
         # move to random window
-        self.poseManager.setPose(draw.PoseList.walk)
-        self.moveManager.moveToward(fun.addVector(mywin.pos,fun.reVector(edgeAdder)),_pullWindow)
+        return _move(fun.addVector(mywin.pos,fun.reVector(edgeAdder)),_pullWindow)
     
-    # onclick  
-    def _onclick(end):
+    # gp
+    def _groundpound(end):
+        self.moveManager.moveToward(self.moveManager.nowPos)
+        self.animationManager.add(animation.genShake(2.5,10))
+        self.poseManager.setPose(pose.PoseList.jump,pose.MorePose(random.randint(8,10),end))
         
-        def afterGP():
-            ame.Run(main,setting,self.moveManager.nowPos)
-            self.animationManager.add(animation.genShake(2,10,setting.frameRate))
-            end()
-        # groundpound
-        self.poseManager.setPose(draw.PoseList.jump,draw.MorePose(1,afterGP))
+    # onclick
+    def _onclick(end):
+        end()
         
     # muse set
     devices = AudioUtilities.GetSpeakers()
@@ -105,16 +118,24 @@ def main(self):
         self.moveManager.moveToward(self.moveManager.nowPos)
         
         # muse
-        self.poseManager.setPose(draw.PoseList.muse,draw.MorePose(10,end))
+        self.poseManager.setPose(pose.PoseList.muse,pose.MorePose(10,end))
         
+    def _disrupt(end):
+        if(fun.percent(50,True)):
+            return _windowPicker(end)
+        else:
+            return _groundpound(end)
+        
+    print(setting.main.disruptRate,setting.main.runRate)
     cmds = [
-        occur.Command(occur.When(setting.frameRate,percent=setting.ALWAYS),_stand,5),
-        occur.Command(occur.When(setting.frameRate,percent=70),_run,4),
-        occur.Command(occur.When(clicked=0),_onclick,3),
-        occur.Command(occur.When(checker=_museChecker),_museOn,2),
-        occur.Command(occur.When(setting.frameRate,percent=1/60 * 100),_windowPicker,1),
+        occur.Command(occur.When(percent=setting.main.ALWAYS),_stand,6),
+        occur.Command(occur.When(percent=setting.main.runRate),_run,5),
+        occur.Command(occur.When(clicked=0),_onclick,4),
+        occur.Command(occur.When(checker=_museChecker),_museOn,3),
+        occur.Command(occur.When(percent=setting.main.disruptRate),_disrupt,2),
+        # occur.Command(occur.When(percent=setting.main.ALWAYS),_windowPicker,1),
     ]
     return cmds
     
 
-gen.Gen(main,setting)
+gen.Gen(main, dev=False)

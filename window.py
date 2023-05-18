@@ -1,7 +1,7 @@
 import tkinter as tk
 from PIL import ImageTk
 import random
-import getweb,fun
+import fun,setting
 
 from win32api import GetMonitorInfo, MonitorFromPoint
 
@@ -11,8 +11,6 @@ class Window:
         self.root.resizable(False, False)
         self.root.title("ame")
         
-        # set window
-        self.root.overrideredirect(True)
         self.root.wm_attributes("-topmost", True)
         
         self._locate((0,0))
@@ -30,8 +28,9 @@ class Window:
         imgLabel.image = img
         imgLabel.configure(image=img)
         imgLabel.bind("<Button-1>",self.delThis)
-        
         imgLabel.pack()
+        
+        self.size = (self.root.winfo_width(),self.root.winfo_height())
 
         self.root.update_idletasks()
         
@@ -61,19 +60,24 @@ def getTask():
     return monitor_area[3]-work_area[3]
 
 taskSize = -1
-def randomPos(root):
+def randomPos(rootSize = None):
     global taskSize
     if taskSize == -1:
         taskSize = getTask()
     
-    winSize = root.winfo_screenwidth(), root.winfo_screenheight()
-    rootSize = root.winfo_width(), root.winfo_height()
+    winSize = setting.main.screenSize
+    
+    if(rootSize == None):
+        rootSize = setting.main.appSize
     
     return (random.randint(0,winSize[0]-rootSize[0]),random.randint(0,winSize[1]-rootSize[1]-taskSize))
 
-def randomEdge(root):
-    winSize = root.winfo_screenwidth(), root.winfo_screenheight()
-    rootSize = root.winfo_width(), root.winfo_height()
+def randomEdge(rootSize = None):
+    
+    winSize = setting.main.screenSize
+    
+    if(rootSize == None):
+        rootSize = setting.main.appSize
     
     if(fun.percent(50)):
         if(fun.percent(50)):
@@ -89,19 +93,3 @@ def randomEdge(root):
         else:
             # bottom
             return (random.randint(0,winSize[0]-rootSize[0]),winSize[1])
-
-def _test():
-    
-    # get img
-    imgs = getweb.AmeImg()
-    
-    main = Window()
-    print(getTask())
-    for _ in range(10):
-        mywin = Window()
-        mywin._setImg(imgs.get())
-        mywin._locate(randomPos(mywin.root))
-        
-    main.root.mainloop()
-
-# _test()

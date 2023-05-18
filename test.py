@@ -1,14 +1,20 @@
-import tkinter as tk #import Tkinter as tk #change to commented for python2
+import tkinter as tk
 
 root = tk.Tk()
+label = tk.Label(root, text="timer = 0")
+label.pack()
+nowTime=0
 
-for i in range(4):
-    #make a window with a label
-    window = tk.Toplevel(root)
-    label = tk.Label(window,text="window {}".format(i))
-    label.pack()
-    #add a button to root to lift that window
-    button = tk.Button(root, text = "lift window {}".format(i), command=window.lift)
-    button.grid(row=i)
+def nextTime():
+    global root,label,nowTime
+    label.config(text=nowTime)
+    
+    nowTime+=1
+    root.after(1000, nextTime)
+    
+nextTime()
 
-root.mainloop()
+# child window
+root.after(0,tk.Toplevel)
+
+tk.mainloop()
