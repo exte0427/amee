@@ -1,4 +1,5 @@
 import random
+import setting
 
 def addVector(v1,v2):
     return (v1[0]+v2[0],v1[1]+v2[1])
@@ -7,11 +8,11 @@ def reVector(v1):
     return (-v1[0],-v1[1])
 
 # percentage to run 0~100
-def percent(percentage, frameRate=1):
-    if(random.uniform(0,100) <= percentage/frameRate):
-        return True
+def percent(percentage, onceOccur=False):
+    if(not onceOccur):
+        return random.uniform(0,100) <= percentage/setting.main.frameRate
     else:
-        return False
+        return random.uniform(0,100) <= percentage
     
 def _test(percentage,frameRate=1,time = 1):
     sumNum = 0

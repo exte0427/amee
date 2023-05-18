@@ -1,6 +1,7 @@
 import win32api
 import random
 import tkinter as tk
+import setting
 
 class AnimationManager:
     def __init__(self):
@@ -39,8 +40,8 @@ class Timer:
     def getNorm(self):
         return self.time/self.target
             
-def genShake(time,intense,frameRate):
-    myTimer = Timer(time*frameRate)
+def genShake(time,intense):
+    myTimer = Timer(time*setting.main.frameRate)
     def shake(end):
         if(myTimer.isEnd()):
             end()

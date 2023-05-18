@@ -1,10 +1,15 @@
 import random
+import setting
 
 class When:
-    def __init__(self,frameRate = -1,clicked=-1, percent=-1,checker=None):
+    def __init__(self,clicked=-1, percent=-1,checker=None):
         self.checker = checker
         self.clicked = clicked
-        self.percent = percent/frameRate
+        
+        if(percent != -1):
+            self.percent = percent/setting.main.frameRate
+        else:
+            self.percent = -1
 
 class Command:
     def __init__(self, when, runner,runIndex):
@@ -16,63 +21,43 @@ class Command:
         return self.runner(endRun)
 
 class EventListener:
-    def __init__(self, imgLabel,frameRate):
+    def __init__(self):
         
         # setting
-        self.imgLabel = imgLabel
-        self.event = [False,False,False]
-        self._setEvent()
         self.randomValue = 100
         
         # for time calc
-        self.frameRate = frameRate
         self.timer = 0
         
-    def _clickOccur(self,num):
-        def eventSetter(_):
-            self.event[num] = True
-           
-        return eventSetter 
-        
-    def _setEvent(self):
-        self.imgLabel.bind("<Button-1>",self._clickOccur(0))
-        self.imgLabel.bind("<Button-2>",self._clickOccur(1))
-        self.imgLabel.bind("<Button-3>",self._clickOccur(2))
-        
-    def resetEvent(self):
-        self.event = [False,False,False]
+        # click events
+        self.clicked = [False,False]
         
     def makeRandom(self):
         self.randomValue = random.uniform(0,100)
         
-    def calculateRun(self,when):
+    def setDefault(self):
+        self.clicked= [False,False]
         
+    def calculateRun(self,when):
         if(when.checker != None):
             return when.checker()
-        
-        if(when.clicked != -1):
-            return self.event[when.clicked]
         
         if(when.percent != -1):
             return when.percent>=self.randomValue
         
+        if(when.clicked != -1):
+            return self.clicked[when.clicked]
+        
         
 
 class OccurManager:
-    def __init__(self,frameRate,imgLabel):
-        self.commandList=[]
-        self.availMethods=[]
+    def __init__(self,getCmds):
+        self.commandList=getCmds
         self.runIndex = -1
-        self.imgLabel = imgLabel
-        self.frameRate = frameRate
+        self.frameRate = setting.main.frameRate
         self.startIndex = -1
         self.runCmdMethod = None
-        
-        # event listener
-        self.eventListener = EventListener(self.imgLabel,frameRate)
-        
-    def occurList(self,cmds):
-        self.commandList = (cmds)
+        self.eventListener = EventListener()
         
     def calcRunIndex(self,runIndex):
         return self.runIndex == -1 or runIndex <= self.runIndex
@@ -91,9 +76,9 @@ class OccurManager:
                 self.start(cmd)
         
     def nextFrame(self):
-        
         self.eventListener.makeRandom()
         self.runCommands()
         if(self.runCmdMethod != None):
             self.runCmdMethod()
-        self.eventListener.resetEvent()
+            
+        self.eventListener.setDefault()
